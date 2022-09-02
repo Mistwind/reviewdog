@@ -15,6 +15,9 @@ type BuildInfo struct {
 	Repo  string
 	SHA   string
 
+	// Optional. only for gitlab-push-commit
+	BeforeSHA string
+
 	// Optional.
 	PullRequest int // MergeRequest for GitLab.
 
@@ -81,6 +84,10 @@ func GetBuildInfo() (prInfo *BuildInfo, isPR bool, err error) {
 		return nil, false, errors.New("cannot get commit SHA from environment variable. Set CI_COMMIT?")
 	}
 
+	beforeSHA := getOneEnvValue([]string{
+		"CI_COMMIT_BEFORE_SHA",
+	})
+
 	branch := getOneEnvValue([]string{
 		"CI_BRANCH", // common
 		"TRAVIS_PULL_REQUEST_BRANCH",
@@ -98,6 +105,7 @@ func GetBuildInfo() (prInfo *BuildInfo, isPR bool, err error) {
 		Repo:        repo,
 		PullRequest: pr,
 		SHA:         sha,
+		BeforeSHA:   beforeSHA,
 		Branch:      branch,
 	}, pr != 0, nil
 }

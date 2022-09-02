@@ -295,7 +295,7 @@ github-pr-check reporter as a fallback.
 		}
 		ds = gs
 	case "gitlab-mr-discussion":
-		build, cli, err := gitlabBuildWithClient()
+		build, cli, err := gitlabBuildWithClient(opt.reporter)
 		if err != nil {
 			return err
 		}
@@ -315,7 +315,7 @@ github-pr-check reporter as a fallback.
 			return err
 		}
 	case "gitlab-mr-commit":
-		build, cli, err := gitlabBuildWithClient()
+		build, cli, err := gitlabBuildWithClient(opt.reporter)
 		if err != nil {
 			return err
 		}
@@ -335,7 +335,21 @@ github-pr-check reporter as a fallback.
 			return err
 		}
 	case "gitlab-push-commit":
-		return nil
+		build, cli, err := gitlabBuildWithClient(opt.reporter)
+		if err != nil {
+			return err
+		}
+
+		gc, err := gitlabservice.NewGitLabPushCommitsCommenter(cli, build.Owner, build.Repo, build.SHA)
+		if err != nil {
+			return err
+		}
+
+		cs = reviewdog.MultiCommentService(gc, cs)
+		ds, err = gitlabservice.NewGitLabPushCommitsDiff(cli, build.Owner, build.Repo, build.SHA, build.BeforeSHA)
+		if err != nil {
+			return err
+		}
 
 	case "gerrit-change-review":
 		b, cli, err := gerritBuildWithClient()
@@ -560,7 +574,7 @@ func githubBaseURL() (*url.URL, error) {
 	return u, nil
 }
 
-func gitlabBuildWithClient() (*cienv.BuildInfo, *gitlab.Client, error) {
+func gitlabBuildWithClient(reporter string) (*cienv.BuildInfo, *gitlab.Client, error) {
 	token, err := nonEmptyEnv("REVIEWDOG_GITLAB_API_TOKEN")
 	if err != nil {
 		return nil, nil, err
@@ -576,13 +590,15 @@ func gitlabBuildWithClient() (*cienv.BuildInfo, *gitlab.Client, error) {
 		return nil, nil, err
 	}
 
-	if g.PullRequest == 0 {
-		prNr, err := fetchMergeRequestIDFromCommit(client, g.Owner+"/"+g.Repo, g.SHA)
-		if err != nil {
-			return nil, nil, err
-		}
-		if prNr != 0 {
-			g.PullRequest = prNr
+	if reporter == "gitlab-mr-commit" || reporter == "gitlab-mr-discussion" {
+		if g.PullRequest == 0 {
+			prNr, err := fetchMergeRequestIDFromCommit(client, g.Owner+"/"+g.Repo, g.SHA)
+			if err != nil {
+				return nil, nil, err
+			}
+			if prNr != 0 {
+				g.PullRequest = prNr
+			}
 		}
 	}
 
