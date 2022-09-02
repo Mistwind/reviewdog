@@ -87,7 +87,7 @@ const (
 		"nofilter"
 			Do not filter any results.
 `
-	reporterDoc = `reporter of reviewdog results. (local, github-check, github-pr-check, github-pr-review, gitlab-mr-discussion, gitlab-mr-commit)
+	reporterDoc = `reporter of reviewdog results. (local, github-check, github-pr-check, github-pr-review, gitlab-mr-discussion, gitlab-mr-commit, gitlab-push-commit)
 	"local" (default)
 		Report results to stdout.
 
@@ -139,6 +139,10 @@ const (
 	"gitlab-mr-commit"
 		Same as gitlab-mr-discussion, but report results to GitLab comments for
 		each commits in Merge Requests.
+
+	"gitlab-push-commit"
+	    Report results to the latest commit when triggered by gitlab push. 
+		the diff is between the latest commit of the push(CI_COMMIT_SHA) and the commit before push(CI_COMMIT_BEFORE_SHA).
 
 	"gerrit-change-review"
 		Report results to Gerrit Change comments.
@@ -330,6 +334,9 @@ github-pr-check reporter as a fallback.
 		if err != nil {
 			return err
 		}
+	case "gitlab-push-commit":
+		return nil
+
 	case "gerrit-change-review":
 		b, cli, err := gerritBuildWithClient()
 		if err != nil {
