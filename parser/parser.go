@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 
 	"github.com/reviewdog/errorformat/fmts"
 
@@ -27,6 +28,8 @@ type Option struct {
 // New returns Parser based on Option.
 func New(opt *Option) (Parser, error) {
 	name := opt.FormatName
+
+	log.Printf("parser name = %s\n", name)
 
 	if name != "" && len(opt.Errorformat) > 0 {
 		return nil, errors.New("you cannot specify both format name and errorformat at the same time")

@@ -257,6 +257,10 @@ func run(r io.Reader, w io.Writer, opt *option) error {
 			return err
 		}
 
+		for k, v := range projectConf.Runner {
+			log.Printf("reviewdog: runner is %s-%s\n", k, *v)
+		}
+
 		cs = reviewdog.NewUnifiedCommentWriter(w)
 	} else {
 		cs = reviewdog.NewRawCommentWriter(w)
@@ -339,17 +343,20 @@ github-pr-check reporter as a fallback.
 		if err != nil {
 			return err
 		}
+		log.Printf("reviewdog: [gitlab-push-commit-report] gitlabBuildWithClient ok\n")
 
 		gc, err := gitlabservice.NewGitLabPushCommitsCommenter(cli, build.Owner, build.Repo, build.SHA)
 		if err != nil {
 			return err
 		}
+		log.Printf("reviewdog: [gitlab-push-commit-report] NewGitLabPushCommitsCommenter ok\n")
 
 		cs = reviewdog.MultiCommentService(gc, cs)
 		ds, err = gitlabservice.NewGitLabPushCommitsDiff(cli, build.Owner, build.Repo, build.SHA, build.BeforeSHA)
 		if err != nil {
 			return err
 		}
+		log.Printf("reviewdog: [gitlab-push-commit-report] NewGitLabPushCommitsDiff ok\n")
 
 	case "gerrit-change-review":
 		b, cli, err := gerritBuildWithClient()
@@ -409,6 +416,7 @@ github-pr-check reporter as a fallback.
 	if err != nil {
 		return err
 	}
+	log.Printf("reviewdog: newParserFromOpt ok\n")
 
 	app := reviewdog.NewReviewdog(toolName(opt), p, cs, ds, opt.filterMode, opt.failOnError)
 	return app.Run(ctx, r)

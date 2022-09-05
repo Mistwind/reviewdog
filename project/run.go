@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"os/exec"
 	"runtime"
 	"strings"
 
@@ -45,6 +46,7 @@ func RunAndParse(ctx context.Context, conf *Config, runners map[string]bool, def
 			fname = runnerName
 		}
 		opt := &parser.Option{FormatName: fname, Errorformat: runner.Errorformat}
+		log.Printf("reviewdog: parse opts = %v\n", *opt)
 		p, err := parser.New(opt)
 		if err != nil {
 			return nil, err
@@ -62,11 +64,24 @@ func RunAndParse(ctx context.Context, conf *Config, runners map[string]bool, def
 			if err != nil {
 				return err
 			}
+			log.Printf("reviewdog: parse ok\n")
+			log.Printf("reviewdog: diagnostic len = %d\n", len(diagnostics))
+
+			for _, d := range diagnostics {
+				log.Printf("reviewdog: diagnostic = %#v\n", d)
+			}
+
 			level := runner.Level
 			if level == "" {
 				level = defaultLevel
 			}
 			cmdErr := cmd.Wait()
+			if e, ok := cmdErr.(*exec.ExitError); ok {
+				fmt.Printf("exit error = %s, processtate = %s\n", string(e.Stderr), e.ProcessState)
+			} else {
+				fmt.Printf("cmdErr is not a exitError\n")
+			}
+
 			results.Store(runnerName, &reviewdog.Result{
 				Name:        runnerName,
 				Level:       level,
@@ -102,8 +117,11 @@ func Run(ctx context.Context, conf *Config, runners map[string]bool, c reviewdog
 
 	b, err := d.Diff(ctx)
 	if err != nil {
+		fmt.Printf("diff error: %s\n", err)
 		return err
 	}
+	fmt.Printf("diff ok\n")
+
 	filediffs, err := diff.ParseMultiFile(bytes.NewReader(b))
 	if err != nil {
 		return err

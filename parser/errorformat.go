@@ -37,6 +37,7 @@ func (p *ErrorformatParser) Parse(r io.Reader) ([]*rdf.Diagnostic, error) {
 	var ds []*rdf.Diagnostic
 	for s.Scan() {
 		e := s.Entry()
+		fmt.Printf("entry: %#v\n", e)
 		if e.Valid {
 			d := &rdf.Diagnostic{
 				Location: &rdf.Location{
@@ -58,5 +59,6 @@ func (p *ErrorformatParser) Parse(r io.Reader) ([]*rdf.Diagnostic, error) {
 			ds = append(ds, d)
 		}
 	}
+	fmt.Printf("ErrorformatParser Parse : %d\n", len(ds))
 	return ds, nil
 }

@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"os"
 
 	"github.com/reviewdog/reviewdog/diff"
@@ -66,21 +67,30 @@ func (w *Reviewdog) runFromResult(ctx context.Context, results []*rdf.Diagnostic
 	if err != nil {
 		return err
 	}
+	fmt.Printf("getcwd ok: %s\n", wd)
 
 	checks := filter.FilterCheck(results, filediffs, strip, wd, w.filterMode)
 	hasViolations := false
+	fmt.Printf("checks length is %d\n", len(checks))
 
 	for _, check := range checks {
 		if !check.ShouldReport {
+			fmt.Printf("comment for %s should not be reported\n", check.Diagnostic.Message)
 			continue
 		}
+		fmt.Printf("comment for %s should be reported\n", check.Diagnostic.Message)
 		comment := &Comment{
 			Result:   check,
 			ToolName: w.toolname,
 		}
+
+		fmt.Printf("posting comment for %s...\n", check.Diagnostic.Message)
+
 		if err := w.c.Post(ctx, comment); err != nil {
+			fmt.Printf("posting comment for %s error: %s\n", check.Diagnostic.Message, err)
 			return err
 		}
+		fmt.Printf("posting comment for %s ok\n", check.Diagnostic.Message)
 		hasViolations = true
 	}
 
@@ -104,15 +114,19 @@ func (w *Reviewdog) Run(ctx context.Context, r io.Reader) error {
 		return fmt.Errorf("parse error: %w", err)
 	}
 
+	log.Printf("reviewdog: parse result: %#v\n", results)
+
 	d, err := w.d.Diff(ctx)
 	if err != nil {
 		return fmt.Errorf("fail to get diff: %w", err)
 	}
+	log.Printf("reviewdog: diff ok\n")
 
 	filediffs, err := diff.ParseMultiFile(bytes.NewReader(d))
 	if err != nil {
 		return fmt.Errorf("fail to parse diff: %w", err)
 	}
+	log.Printf("reviewdog: parse multifile ok\n")
 
 	return w.runFromResult(ctx, results, filediffs, w.d.Strip(), w.failOnError)
 }

@@ -3,6 +3,7 @@ package gitlab
 import (
 	"context"
 	"fmt"
+	"log"
 	"os/exec"
 
 	"github.com/xanzy/go-gitlab"
@@ -47,7 +48,9 @@ func NewGitLabPushCommitsDiff(cli *gitlab.Client, owner, repo string, sha string
 // `git diff --find-renames`.
 // git diff old new
 func (g *PushCommitsDiff) Diff(ctx context.Context) ([]byte, error) {
-	return g.gitDiff(ctx, g.beforeSHA, g.sha)
+	b, err := g.gitDiff(ctx, g.beforeSHA, g.sha)
+	log.Printf("reviewdog: [gitlab-push-commit-report] PushCommitsDiff: %s\n", string(b))
+	return b, err
 }
 
 func (g *PushCommitsDiff) gitDiff(_ context.Context, baseSha, targetSha string) ([]byte, error) {
