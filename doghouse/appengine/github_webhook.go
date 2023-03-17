@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/go-github/v39/github"
 
-	"github.com/reviewdog/reviewdog/doghouse/server/storage"
+	"github.com/mistwind/reviewdog/doghouse/server/storage"
 )
 
 type githubWebhookHandler struct {

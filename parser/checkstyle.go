@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/reviewdog/reviewdog/proto/rdf"
+	"github.com/mistwind/reviewdog/proto/rdf"
 )
 
 var _ Parser = &CheckStyleParser{}

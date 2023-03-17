@@ -8,10 +8,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/reviewdog/reviewdog/diff"
-	"github.com/reviewdog/reviewdog/filter"
-	"github.com/reviewdog/reviewdog/parser"
-	"github.com/reviewdog/reviewdog/proto/rdf"
+	"github.com/mistwind/reviewdog/diff"
+	"github.com/mistwind/reviewdog/filter"
+	"github.com/mistwind/reviewdog/parser"
+	"github.com/mistwind/reviewdog/proto/rdf"
 )
 
 // Reviewdog represents review dog application which parses result of compiler

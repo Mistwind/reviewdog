@@ -3,7 +3,7 @@ package githubutils
 import (
 	"fmt"
 
-	"github.com/reviewdog/reviewdog/proto/rdf"
+	"github.com/mistwind/reviewdog/proto/rdf"
 )
 
 // LinkedMarkdownDiagnostic returns Markdown string which contains a link to the

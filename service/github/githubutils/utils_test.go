@@ -3,7 +3,7 @@ package githubutils
 import (
 	"testing"
 
-	"github.com/reviewdog/reviewdog/proto/rdf"
+	"github.com/mistwind/reviewdog/proto/rdf"
 )
 
 func TestLinkedMarkdownDiagnostic(t *testing.T) {

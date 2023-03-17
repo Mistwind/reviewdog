@@ -3,8 +3,8 @@ package bitbucket
 import (
 	"fmt"
 
+	"github.com/mistwind/reviewdog"
 	bbapi "github.com/reviewdog/go-bitbucket"
-	"github.com/reviewdog/reviewdog"
 )
 
 // CloudAPIHelper is collection of utility functions used to build requests

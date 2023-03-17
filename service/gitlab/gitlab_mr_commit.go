@@ -11,9 +11,9 @@ import (
 	"github.com/xanzy/go-gitlab"
 	"golang.org/x/sync/errgroup"
 
-	"github.com/reviewdog/reviewdog"
-	"github.com/reviewdog/reviewdog/service/commentutil"
-	"github.com/reviewdog/reviewdog/service/serviceutil"
+	"github.com/mistwind/reviewdog"
+	"github.com/mistwind/reviewdog/service/commentutil"
+	"github.com/mistwind/reviewdog/service/serviceutil"
 )
 
 var _ reviewdog.CommentService = &MergeRequestCommitCommenter{}

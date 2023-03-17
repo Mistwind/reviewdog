@@ -2,7 +2,7 @@
 all: build
 
 build:
-	go build github.com/reviewdog/reviewdog/cmd/reviewdog
+	go build github.com/mistwind/reviewdog/cmd/reviewdog
 clean:
 	rm -f reviewdog
 

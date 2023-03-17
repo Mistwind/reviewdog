@@ -5,9 +5,9 @@ import (
 	"io"
 	"strings"
 
-	"github.com/reviewdog/reviewdog/diff"
-	"github.com/reviewdog/reviewdog/filter"
-	"github.com/reviewdog/reviewdog/proto/rdf"
+	"github.com/mistwind/reviewdog/diff"
+	"github.com/mistwind/reviewdog/filter"
+	"github.com/mistwind/reviewdog/proto/rdf"
 )
 
 var _ Parser = &DiffParser{}
