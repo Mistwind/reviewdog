@@ -1,4 +1,4 @@
-module github.com/Mistwind/reviewdog
+module github.com/mistwind/reviewdog
 
 go 1.18
 
