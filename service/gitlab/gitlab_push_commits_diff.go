@@ -41,6 +41,22 @@ func NewGitLabPushCommitsDiff(cli *gitlab.Client, owner, repo string, sha string
 	}, nil
 }
 
+// NewGitLabPushCommitsDiffWithProjectID returns a new PushCommitsDiff service.
+// itLabPushCommitsDiff service needs git command in $PATH.
+func NewGitLabPushCommitsDiffWithProjectID(cli *gitlab.Client, projectID string, sha string, beforeSHA string) (*PushCommitsDiff, error) {
+	workDir, err := serviceutil.GitRelWorkdir()
+	if err != nil {
+		return nil, fmt.Errorf("PushCommitsDiff needs 'git' command: %w", err)
+	}
+	return &PushCommitsDiff{
+		cli:       cli,
+		sha:       sha,
+		beforeSHA: beforeSHA,
+		projects:  projectID,
+		wd:        workDir,
+	}, nil
+}
+
 // Diff returns a diff of PushCommits. It runs `git diff` locally instead of
 // diff_url of GitLab Merge Request because diff of diff_url is not suited for
 // comment API in a sense that diff of diff_url is equivalent to

@@ -11,9 +11,10 @@ import (
 
 // BuildInfo represents build information about GitHub or GitLab project.
 type BuildInfo struct {
-	Owner string
-	Repo  string
-	SHA   string
+	Owner     string
+	Repo      string
+	ProjectID string
+	SHA       string
 
 	// Optional. only for gitlab-push-commit
 	BeforeSHA string
@@ -71,6 +72,10 @@ func GetBuildInfo() (prInfo *BuildInfo, isPR bool, err error) {
 		return nil, false, errors.New("cannot get repo name from environment variable. Set CI_REPO_NAME?")
 	}
 
+	projectID := getOneEnvValue([]string{
+		"CI_PROJECT_ID",
+	})
+
 	sha := getOneEnvValue([]string{
 		"CI_COMMIT", // common
 		"TRAVIS_PULL_REQUEST_SHA",
@@ -103,6 +108,7 @@ func GetBuildInfo() (prInfo *BuildInfo, isPR bool, err error) {
 	return &BuildInfo{
 		Owner:       owner,
 		Repo:        repo,
+		ProjectID:   projectID,
 		PullRequest: pr,
 		SHA:         sha,
 		BeforeSHA:   beforeSHA,

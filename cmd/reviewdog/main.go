@@ -345,18 +345,34 @@ github-pr-check reporter as a fallback.
 		}
 		log.Printf("reviewdog: [gitlab-push-commit-report] gitlabBuildWithClient ok\n")
 
-		gc, err := gitlabservice.NewGitLabPushCommitsCommenter(cli, build.Owner, build.Repo, build.SHA)
-		if err != nil {
-			return err
-		}
-		log.Printf("reviewdog: [gitlab-push-commit-report] NewGitLabPushCommitsCommenter ok\n")
+		var gc *gitlabservice.PushCommitsCommenter
+		if build.ProjectID != "" {
+			gc, err = gitlabservice.NewGitLabPushCommitsCommenterWithProjectID(cli, build.ProjectID, build.SHA)
+			if err != nil {
+				return err
+			}
+			log.Printf("reviewdog: [gitlab-push-commit-report] NewGitLabPushCommitsCommenter ok\n")
 
-		cs = reviewdog.MultiCommentService(gc, cs)
-		ds, err = gitlabservice.NewGitLabPushCommitsDiff(cli, build.Owner, build.Repo, build.SHA, build.BeforeSHA)
-		if err != nil {
-			return err
+			cs = reviewdog.MultiCommentService(gc, cs)
+			ds, err = gitlabservice.NewGitLabPushCommitsDiffWithProjectID(cli, build.ProjectID, build.SHA, build.BeforeSHA)
+			if err != nil {
+				return err
+			}
+			log.Printf("reviewdog: [gitlab-push-commit-report] NewGitLabPushCommitsDiff ok\n")
+		} else {
+			gc, err = gitlabservice.NewGitLabPushCommitsCommenter(cli, build.Owner, build.Repo, build.SHA)
+			if err != nil {
+				return err
+			}
+			log.Printf("reviewdog: [gitlab-push-commit-report] NewGitLabPushCommitsCommenter ok\n")
+
+			cs = reviewdog.MultiCommentService(gc, cs)
+			ds, err = gitlabservice.NewGitLabPushCommitsDiff(cli, build.Owner, build.Repo, build.SHA, build.BeforeSHA)
+			if err != nil {
+				return err
+			}
+			log.Printf("reviewdog: [gitlab-push-commit-report] NewGitLabPushCommitsDiff ok\n")
 		}
-		log.Printf("reviewdog: [gitlab-push-commit-report] NewGitLabPushCommitsDiff ok\n")
 
 	case "gerrit-change-review":
 		b, cli, err := gerritBuildWithClient()

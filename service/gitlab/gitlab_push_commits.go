@@ -50,6 +50,21 @@ func NewGitLabPushCommitsCommenter(cli *gitlab.Client, owner, repo string, sha s
 	}, nil
 }
 
+// NewGitLabPushCommitsCommenterWithProjectID returns a new PushCommitsCommenter service.
+// PushCommitsCommenter service needs git command in $PATH.
+func NewGitLabPushCommitsCommenterWithProjectID(cli *gitlab.Client, projectID string, sha string) (*PushCommitsCommenter, error) {
+	workDir, err := serviceutil.GitRelWorkdir()
+	if err != nil {
+		return nil, fmt.Errorf("PushCommitsCommenter needs 'git' command: %w", err)
+	}
+	return &PushCommitsCommenter{
+		cli:      cli,
+		sha:      sha,
+		projects: projectID,
+		wd:       workDir,
+	}, nil
+}
+
 // Post accepts a comment and holds it. Flush method actually posts comments to
 // GitLab in parallel.
 func (g *PushCommitsCommenter) Post(_ context.Context, c *reviewdog.Comment) error {
